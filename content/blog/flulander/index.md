@@ -16,11 +16,15 @@ W tym artykule/tutorialu czy jak to zwać, chciałem pokazać wam jak zbudować 
 - Inne takie takie
 - Na koniec CI za pomocą Github Actions
 
+Ogólnie:
+
+![Zoolander](https://media4.giphy.com/media/l4KhVp1aGeqzeMDok/giphy-downsized.gif)
+
 > Nie jest to tutorial nt Freezed, Riverpod itp. a raczej tutorial jak to ze sobą połączyć w prawdziwej apce. Wszelkie hello wordy tych paczek są dobrze opisane w dokumentacjach.
 >
 > Zaprezentowane podejście jest
 > a) Inspirowane tym co znajdziecie w kursie Resocodera DDD.
-> b) Nie będę tłumaczył takich rzeczy jak skonfigurowanie Firebase dla Fluttera czy jak się instaluje paczkę pub (tak jak wspomniałem, myślę, że nie jest to materiał dla początkujących plus takie rzeczy najlepiej opisane są w dokumentacji.
+> b) Nie będę tłumaczył takich rzeczy jak skonfigurowanie Firebase dla Fluttera czy jak się instaluje paczkę pub (tak jak wspomniałem, myślę, że nie jest to materiał dla początkujących plus takie rzeczy najlepiej opisane są w dokumentacji).
 > c) Używamy Riverpod który wg jego twórcy już mocno się nie zmieni, ale to dalej stabilna beta plus sam nie jestem kotem w tej technologii, więc jest to moje podejście i jestem otwarty na uwagi.
 
 ### Dobra to zaczynamy:
@@ -29,15 +33,15 @@ W tym artykule/tutorialu czy jak to zwać, chciałem pokazać wam jak zbudować 
 
 > Wikipedia powie wam, że Domain-driven design – podejście do tworzenia oprogramowania kładące nacisk na takie definiowanie obiektów i komponentów systemu oraz ich zachowań, aby wiernie odzwierciedlały rzeczywistość. Dopiero po utworzeniu takiego modelu należy rozważyć >zagadnienia związane z techniczną realizacją.
 
-No i spoko, ale mi na początku dużo to nie mówiło (w sumie dalej w DDD nie czuje się turbo mocny). Jeżeli obejrzycie materiał na ten temat z Flutter Europe, to możliwe, że tak jak ja, też poczujecie się przytłoczeniu natłokiem nowych informacji. Dlatego tuaj mamy DDD for dummies. Myślę, że każdy poważny Inżynier a nie klepacz kodu (ja jestem raczej klepaczem) będzie miał tu coś do dodania i pewnie słusznie, ale może na początek wystarczy moje łopatologiczne podejście.
+No i spoko, ale mi na początku dużo to nie mówiło (w sumie dalej w DDD nie czuje się turbo mocny). Jeżeli obejrzycie materiał na ten temat z Flutter Europe, to możliwe, że tak jak ja, też poczujecie się przytłoczeni natłokiem nowych informacji. Dlatego tutaj mamy DDD for dummies. Myślę, że każdy poważny Inżynier a nie klepacz kodu (ja jestem raczej klepaczem) będzie miał tu coś do dodania i pewnie słusznie, ale może na początek wystarczy moje łopatologiczne podejście.
 
-W skrócie projekt (to co jest w /lib) podzielimy sobie na 4 główne foldery: domain, infrastructure, application, presentation. Poza tymi folderami w /lib będzie tylko main.dart. I w sumie tyle. Możecie sobie nazywać wasze foldery w ten sposób i już czuć się jak Wujek Bob. Kolejność nie jest przypadkowa i odzwierciedla flow tworzenia ficzerów w apce (pomijam testowanie jeżeli ktoś pisze z TDD, my potestujemy na końcu aby było klarowniej). Cały ten proces fajnie odzwierciedla jakieś takie ala zwinne flow i przechodzimy od największej abstrakcji do implementacji na widokach.
+W skrócie projekt (to co jest w /lib) podzielimy sobie na 4 główne foldery: `domain`, `infrastructure`, `application`, `presentation`. Poza tymi folderami w `/lib` będzie tylko `main.dart`. I w sumie tyle. Możecie sobie nazywać wasze foldery w ten sposób i już czuć się jak Wujek Bob. Kolejność nie jest przypadkowa i odzwierciedla flow tworzenia ficzerów w apce (pomijam testowanie jeżeli ktoś pisze z TDD, my potestujemy na końcu aby było klarowniej). Cały ten proces fajnie odzwierciedla jakieś takie ala zwinne flow i przechodzimy od największej abstrakcji do konkretnej implementacji na widokach.
 
 #### Domain
 
-Czyli mamy jakąś domenę biznesową, np. Analityk/PM/Ktoś mówi “Yo, apka ma mieć system autoryzacji usera”. Nie ma tu mowy o tym czego użyjemy. Jakiego frameworka? Jaki backend? Etc. Jest prosta domena “Ma być auth”. Więc my w folderze domain tworzymy dla foldery “core” i “auth” (core jest zawsze a auth to nazwa naszej domeny autoryzacji - w następnych folderach będziemy to nazewnictwo powtarzać).
+Czyli mamy jakąś domenę biznesową, np. Analityk/PM/Ktoś mówi “Yo, apka ma mieć system autoryzacji usera”. Nie ma tu mowy o tym czego użyjemy. Jakiego frameworka? Jaki backend? Etc. Jest prosta domena “Ma być auth”. Więc my w folderze domain tworzymy dla foldery “core” i “auth” (`core` jest zawsze a `auth` to nazwa naszej domeny autoryzacji - w następnych folderach będziemy to nazewnictwo powtarzać).
 
-I tutaj zaczyna się zabawa bo wchodzimy to domain/auth/core i tworzymy sobie plik `failures.dart` … ale jak to? Ktoś zapyta. No tak to, że zaczynamy od zdefiniowania sobie jakie możemy dostać błędy po stronie aplikacji (nie serwera) podczas logowania. Np. email nie jest typu email i wasze dupa123 nie pasuje do wzoru dupa@123.pl wiec User otrzyma błąd, że format email jest zły. Użyjemy tutaj paczki freezed, która jest generatorem kodu (jeżeli ktoś nie zna build_runnera do generowania kodu we Flutterze, bo jest dużo materiałów na np YouTubie i jak to mówią modni tutorialowcy - it’s out of scope of this tutorial). A więc nasze failures to:
+I tutaj zaczyna się zabawa bo wchodzimy to `domain/auth/core` i tworzymy sobie plik `failures.dart` … ale jak to? Ktoś zapyta. No tak to, że zaczynamy od zdefiniowania sobie jakie możemy dostać błędy po stronie aplikacji (nie serwera) podczas logowania. Np. email nie jest typu email i wasze dupa123 nie pasuje do wzoru dupa@123.pl wiec User otrzyma błąd, że format email jest zły. Użyjemy tutaj paczki `freezed`, która jest generatorem kodu (jeżeli ktoś nie zna `build_runnera` do generowania kodu we Flutterze, bo jest dużo materiałów na np YouTubie i jak to mówią modni tutorialowcy - it’s out of scope of this tutorial). A więc nasze failures to:
 
 ```dart
 part 'failures.freezed.dart';
@@ -62,7 +66,7 @@ abstract class ValueFailure<T> with _$ValueFailure<T> {
 
 Ich nazwy jak “invalid email” mówią same za siebie co oznaczają.
 
-Aby móc sobie walidować naszego emaila i password, trzeba stworzyć jakieś walidatory, a więc dalej w domain/core tworzymy value validators.dart. Używamy tutaj paczki dartz, która w skrócie przynosi świat functional programming do fluttera i daje nam takie dobra jak typ `Either<Left, Right>` który może zwracać Left lub Right w zależności od “ustawień”. Każdy z naszych validatorów zwróci albo ValueFailure albo String (bo validujemy email i password). Czyli walidator przyjmuje String input, mieli to, i zaraca albo right czyli “Elegancko, ten String jest gitara” i zwraca ten sam string albo left czyli “_halo wpisałeś dupa123 a nie dupa@123.pl, oto twój błąd w postaci ValueFailure_”.
+Aby móc sobie walidować naszego emaila i password, trzeba stworzyć jakieś walidatory, a więc dalej w `domain/core` tworzymy `value_validators.dart`. Używamy tutaj paczki `dartz`, która w skrócie przynosi świat functional programming do darta i daje nam takie dobra jak typ `Either<Left, Right>` który może zwracać Left lub Right w zależności od “ustawień”. Każdy z naszych validatorów zwróci albo `ValueFailure` albo `String` (bo validujemy email i password). Czyli walidator przyjmuje `String` input, mieli to, i zaraca albo `right` czyli “Elegancko, ten String jest gitara” i zwraca ten sam string albo `left` czyli “_halo wpisałeś dupa123 a nie dupa@123.pl, oto twój błąd w postaci ValueFailure_”.
 
 ```dart
 import 'package:dartz/dartz.dart';
@@ -101,7 +105,7 @@ Either<ValueFailure<String>, String> validatePassword(String input) {
 }
 ```
 
-Dalej tworzymy errors.dart i jest to po prostu typ Errora dla wartości (można śmiało kopiować i potem przy używaniu się rozjaśni ocb)
+Dalej tworzymy `errors.dart` i jest to po prostu typ Errora dla wartości (można śmiało kopiować i potem przy używaniu się rozjaśni ocb)
 
 ```dart
 import 'package:bangerify/domain/core/failures.dart';
@@ -122,7 +126,7 @@ class UnexpectedValueError extends Error {
 
 ```
 
-Dalej wsadzimy tutaj koncept Value Object o którym możecie sobie pooglądać [tutaj](https://www.youtube.com/playlist?list=PLB6lc7nQ1n4iS5p-IezFFgqP6YvAJy84U). Ponownie for dummies jak ja: Nasze obiekty będą trzymały jakąś wartość - czyli obiekt “email” nie będzie typu String ale typu `EmailAddress`, z kolei `EmailAddress` będzie właśnie rozszerzał ten `ValueObject` z core (dlatego jest w core). Po co? A no po to, że taki obiekt może się np auto walidować (polecam serio tutki od Resocodera w tym temacie). Czyli nasz `value_object.dart` wygląda tak:
+Dalej wsadzimy tutaj koncept `Value Object` o którym możecie sobie pooglądać [tutaj](https://www.youtube.com/playlist?list=PLB6lc7nQ1n4iS5p-IezFFgqP6YvAJy84U) u ResoCodera. Ponownie for dummies takich jak ja: Nasze obiekty będą trzymały jakąś wartość - czyli obiekt “email” nie będzie typu `String` ale typu `EmailAddress`, z kolei `EmailAddress` będzie właśnie rozszerzał ten `ValueObject` z core (dlatego jest w core). Po co? A no po to, że taki obiekt może się np auto walidować (polecam serio tutki od Resocodera w tym temacie). Czyli nasz `value_object.dart` wygląda tak:
 
 ```dart
 import 'package:dartz/dartz.dart';
@@ -164,7 +168,7 @@ abstract class ValueObject<T> {
 }
 ```
 
-Ponownie dartz w grze. Wartość naszego obiektu będzie właśnie typu `Either<AuthFailure, Right>`. Czyli ponowne nasz email, który w 99% tutoriali będzie `Stringiem`, u nas będzie EmailAddressem o wartości `Either<ValueFailure<String>, String>>` czyli zwróci albo błąd ze `Stringiem` albo `String`. Zaraz dojdziemy do tworzenia konkretnych ValueObjectów jak `EmailAddress` czy `Password`.
+Ponownie dartz w grze. Wartość naszego obiektu będzie właśnie typu `Either<AuthFailure, Right>`. Czyli ponowne nasz email, który w 99% tutoriali będzie `Stringiem`, u nas będzie `EmailAddressem` o wartości `Either<ValueFailure<String>, String>>` czyli zwróci albo błąd ze `Stringiem` albo `String`. Zaraz dojdziemy do tworzenia konkretnych ValueObjectów jak `EmailAddress` czy `Password`.
 
 Na koniec nasz pierwszy obiekty rozszerzający `ValueObject` - jedyny w core bo bardzo uniwersalny, czyli `UniqueId`.
 
@@ -190,11 +194,11 @@ Jak widzisz jako, że rozszerza `ValueObject<String>` to jego value będzie `Eit
 
 Ma też dwie fabryki jedna do tworzenia go ze z góry znanym ID (np ten z firebase) druga jeżeli nie podamy ID to sam sobie je stworzy za pomocą paczki `Uuid`.
 
-Uff core skończony. Jak widzicie nawet dobrze nie zaczęliśmy a już wszystko jest pokręcone jak lato z radiem.
+Uff core skończony. Jak widzicie nawet dobrze nie zaczeliśmy a już wszystko jest pokręcone jak lato z radiem.
 
 Ale ok jesteśmy dalej w Domain ale tworzymy folder (nie plik) “auth”. Yep zaczynamy projektować domenę autoryzacji!
 
-Normalnie tworzymy jakiś model typu `User` prawda? No to pyk, nie ma chuja, tutaj tworzymy `Entity`! Jep `Entity` to taka jednostka, którą modele dopiero mogą implementować. To coś turbo abstrakcyjnego czyli potwierdza się to co pisałem wcześniej - jesteś w domain smarkaczu, tutaj tylko filozofujemy! A więc filozofujemy, że w sumie w autoryzacji to autoryzujemy jakiegoś `Usera` i tworzymy `user.dart` oczywiście będzie to klasa zrobiona za pomocą `Freezed` bo kochamy `Freezed`.
+Normalnie tworzymy jakiś model typu `User` prawda? No to pyk, nie ma chuja, tutaj tworzymy `Entity`! Jep `Entity` to taka jednostka, którą modele dopiero mogą implementować. To coś turbo abstrakcyjnego czyli potwierdza się to co pisałem wcześniej - jesteś w domain cwaniaczku, tutaj tylko filozofujemy! Chcesz sobie dowawać Row i Column to sobie poczekasz. A więc filozofujemy, że w sumie w autoryzacji to autoryzujemy jakiegoś `Usera` i tworzymy `user.dart` oczywiście będzie to klasa zrobiona za pomocą `Freezed` bo kochamy `Freezed`.
 
 ```dart
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -211,7 +215,7 @@ abstract class User with _$User {
 
 Aby nie gmatwać nie wiadomo jak, nasza jednostka usera ma tylko ID typu uwaga… `UniqueId` - yep w końcu użyliśmy tego syfu z `domain/code`. Widzicie jakie to posrane - normalnie jest model `User` który ma id typu `String` a tu jakiś typ wam mówi, że macie `Entity User`, który ma `ID` typu `UniqueId` które ma wartość `String`. Jeżeli ten koncept nie wchodzi wam teraz do głowy, to warto się nad tym jeszcze zastanawiać, bo wyraźnie widać wzór.
 
-Dalej robimy to samo co w core czyli tworzymy błędy i value object ale tym razem już stricte pod “auth”. Tak jak w core robiliśmy sobie `failures.dart` które były ogólne - taki `invalidEmail` nie musi być zastosowany tylko w autoryzacji bo później np można mieć domene wysyłania emaila itp. Tutaj już jesteśmy w domain/auth więc będą to auth_failures.dart. Też tworzone za pomocą Freezed (bo to Union - klasa freezed z kilkoma fabrykami tak łopatologicznie). Błędy te to typowe błędy z firebase przy autoryzacji jak “email jest już używany”
+Dalej robimy to samo co w `core` czyli tworzymy błędy i value object ale tym razem już stricte pod “auth”. Tak jak w core robiliśmy sobie `failures.dart` które były ogólne - taki `invalidEmail` nie musi być zastosowany tylko w autoryzacji bo później np można mieć domene wysyłania emaila itp. Tutaj już jesteśmy w domain/auth więc będą to `auth_failures.dart`. Też tworzone za pomocą Freezed (bo to Union - klasa freezed z kilkoma fabrykami tak łopatologicznie). Błędy te to typowe błędy z firebase przy autoryzacji jak “email jest już używany”
 
 ```dart
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -226,7 +230,7 @@ abstract class AuthFailure with _$AuthFailure {
 }
 ```
 
-Mamy błędy to dalej jak w core ValueObject. W Auth ValueObjecty będą dwa czyli wspominany już `EmailAddress` i `Password`. Tworzymy je dokładnie tak jak poprzednio `UniqueId`.
+Mamy błędy? Mamy. To dalej tak jak w core `ValueObject` tutaj robimy bardziej konkretnie. W Auth ValueObjecty będą dwa czyli wspominany już `EmailAddress` i `Password`. Tworzymy je dokładnie tak jak poprzednio `UniqueId`.
 
 ```dart
 
@@ -261,11 +265,12 @@ Ba nawet prościej, bo tutaj jest tylko wartość value (typu błąd ze Stringie
 
 #### STOP (ten mikrofon to glock)
 
-Zastanów się teraz przez chwilę nad samą koncepcją ValueObjectu i czy ma to dla Ciebie sens (nie musi mieć, bo to tylko koncept a nie elementarna wiedza). Jednak przemyśl czy to wszystkie kropki jakoś się łączą:
-mamy koncept value object jakiegoś typu czyli obiektu, który ma jakąś wartość błędu lub właśnie tego typu (Either - to albo to)
-Mamy walidatory np. `emailValidator` które też zwracają wartość `Either<błąd, string>`
-Mamy teraz value object - obiekt `EmailAddress`, który ma fabrykę gdzie przekazujemy String i ta fabryka za pomocą walidatora zwraca błąd albo string, czyli taki sam typ jaki ma value `EmailAddress`.
-Czyli tworząc sobie jakiś obiekt `final adres = EmailAddress(‘dupa’)`, `adres.value` będzie błędem i to konkretnym błędem jaki sobie wcześniej stworzyliśmy - czyli zły format adresu, a tworząc `final adres = EmailAddress(‘dupa@123.pl)` , `adres.value` będzie Stringiem dupa@123.pl - Czy to zaczyna mieć sens?
+Zastanów się teraz przez chwilę nad samą koncepcją `ValueObjectu` i czy ma to dla Ciebie sens (nie musi mieć, bo to tylko koncept a nie elementarna wiedza). Jednak przemyśl czy to wszystkie kropki jakoś się łączą:
+
+- Mamy koncept value object jakiegoś typu czyli obiektu, który ma jakąś wartość błędu lub właśnie tego typu (Either - to albo to)
+- Mamy walidatory np. `emailValidator` które też zwracają wartość `Either<błąd, string>`
+- Mamy teraz value object - obiekt `EmailAddress`, który ma fabrykę gdzie przekazujemy String i ta fabryka za pomocą walidatora zwraca błąd albo string, czyli taki sam typ jaki ma value `EmailAddress`.
+- Czyli tworząc sobie jakiś obiekt `final adres = EmailAddress(‘dupa’)`, `adres.value` będzie błędem i to konkretnym błędem jaki sobie wcześniej stworzyliśmy - czyli zły format adresu, a tworząc `final adres = EmailAddress(‘dupa@123.pl)` , `adres.value` będzie Stringiem dupa@123.pl - Czy to zaczyna mieć sens?
 
 Karawana jedzie dalej.
 
@@ -291,9 +296,9 @@ Widzicie, słowo `“abstract”` to jest ten klucz właśnie. Tylko nazwy metod
 
 Uwaga, skończyliśmy folder `“domain”` 25% roboty za nami!
 
-#### INFRASTRUCTURE
+### INFRASTRUCTURE
 
-Przechodzimy do `lib/infrastructure`. Ta warstwa apli w DDD to już nie filozofowanie ale implementacja. Bardzo łopatologicznie w infrastructure głównie (ale nie tylko) implementujemy serwisy/fasady i inne takie takie.
+Przechodzimy do `lib/infrastructure`. Ta warstwa apki w DDD to już nie filozofowanie ale implementacja. Bardzo łopatologicznie w infrastructure głównie (ale nie tylko) implementujemy serwisy/fasady i inne takie takie.
 
 Najpierw jednak zrobimy szybki mapper o nazwie `firebase_user_mapper.dart`
 
