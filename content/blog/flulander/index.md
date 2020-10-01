@@ -1,5 +1,5 @@
 ---
-title: Flulander
+title: Flulander cz. 1 / 2
 date: "2020-09-29"
 description: "Trendi as fak"
 ---
@@ -389,3 +389,5 @@ Huzzah! Infrastructure skończony. Wasza brand new apka dalej pokazuje flutter c
 - teraz w application zbudujemy tych danych za pomocą narzędzia do zarządzania stanem. W naszym przypadku StateNotifer+riverpod+freezed ale równie dobrze może to być bloc, Provder+ChangeNotifer, Mobx czy coś innego. Te warstwy apki działają niezależnie
 - Potem dopiero zbudujemy widoki przekazując do nich dane a Application, a które uzyskaliśmy w Infrastructure. Widzicie jak to się kaskadowo nakłada.
 - Potem potestujemy i ustawimy Github Actions.
+
+Ale to potem, bo musze jeszcze postawić jakiegoś bloga pod to i nie wiem czy ktoś to w ogóle będzie czytał.
