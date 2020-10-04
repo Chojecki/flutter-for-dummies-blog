@@ -188,7 +188,7 @@ Yeeey, mamy naszą warstwę aplikacji! Czyli
 
 I stało się, zaczynamy prace z… Flutterem. Może nie zauważyliście, ale przez cały ten czas, praktycznie nie używaliśmy Fluttera. Pisaliśmy w Darcie. Dopiero teraz, w warstwie widoku zaczynamy “bawić się w paddingi”. No to jazda.
 
-Zanim pójdzie do folderu presentation, w katalogu głównym mamy `main.dart` :
+Zanim pójdziemy do folderu presentation, w katalogu głównym mamy `main.dart` :
 
 ```dart
 import 'package:flutter/material.dart';
@@ -206,8 +206,7 @@ Tutaj ważne, aby naszą apkę opakować w `ProviderScope` - jest to nam potrzeb
 
 Następne co, to tworzymy nasz `router.dart`. Użyjemy super paczki o nazwie `auto_route` i jest to nic innego jak kolejny generator kodu, który stworzy nam nawigację w oparciu o podejście `onGeneratedRoutes`.
 
-dsk
-Flutter 1.22 pozwala nam używać nowego API do nawigacji, ale Navigator 1.0, wciąż będzie działać.
+> Flutter 1.22 pozwala nam używać nowego API do nawigacji, ale Navigator 1.0, wciąż będzie działać.
 
 Tak więc nasz `router.dart` wygląda tak:
 
