@@ -18,7 +18,7 @@ Warstwa aplikacji to w moim odczuciu logika, a jeszcze prościej, nasze zarządz
 
 Dobra ale po primo to taki stan musimy sobie zdefiniować. W podejściu ChangeNotifier+Provider, często widzę, że ktoś po prostu tworzy zmienną X w klasie ChangeNotifer i potem dostarcza ją do widoków za pomocą np. Selecta.
 
-My nasz stan zdefiniujemy jako Union w osobnym pliku. A więc w folderze /application tworzymy folder “auth” (nazwa naszej domeny biznesowej). Tworzymy AuthState w którym definiujemy 3 stany: początkowy, niezalogowany i zalogowany. Union tworzymy oczywiście za pomocą freezed.
+My nasz stan zdefiniujemy jako Union w osobnym pliku. A więc w folderze /application tworzymy folder “auth” (nazwa naszej domeny biznesowej). Tworzymy `AuthState` w którym definiujemy 3 stany: początkowy, niezalogowany i zalogowany. Union tworzymy oczywiście za pomocą freezed.
 
 ```dart
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -33,7 +33,7 @@ abstract class AuthState with _$AuthState {
 }
 ```
 
-Następnym plikiem jaki tworzymy jest `AuthController` i zaczynamy zabawę ponieważ będzie to klasa rozszerzająca `StateNotifer<T>`. Ten typ <T> będzie właśnie typem naszego stanu. StateNotifer daje nam swoją zmienną `state`, która nie oznacza nic innego jak jego aktualny stan typu <T>.
+Następnym plikiem jaki tworzymy jest `AuthController` i zaczynamy zabawę ponieważ będzie to klasa rozszerzająca `StateNotifer<T>`. Ten typ `<T>` będzie właśnie typem naszego stanu. StateNotifer daje nam swoją zmienną `state`, która nie oznacza nic innego jak jego aktualny stan typu `<T>`.
 
 Nasz `AuthController` będzie przyjmował jedną zależność i będzie to `IAuthFacade`. Zwróćcie uwagę, że to klasa abstrakcyjna z naszej domeny a nie implementacja z infrastructure. Dzięki temu `AuthController` jest nie zależny od implementacji ale zgodny z domeną - ma zależność, która wie co ma robić, ale nie wie jak. Teraz jeżeli w przyszłości zrezygnujemy z `Firebase` i użyjemy `Icebase`, to będziemy musieli tylko stworzyć implementację `IAuthFacade` z użyciem Icebase a nasz `AuthController` pozostanie bez zmian i będzie działał.
 
@@ -44,7 +44,7 @@ Metody AuthControllera to:
 - sprawdzenie czy user jest zalogowany
 - wylogowanie
 
-Zobacz, że wzór wygląda podobnie - za pomocą `_authFacade` używamy zależności, aby zrobić coś po stronie Firebase, a następnie przypisujemy do zmiennej `state` dany stan typu AuthState. `getSignedUser` zwraca Option<User>, więc kożystamy z `fold` paczki `dartz` który łopatologicznie oznacza - pierwszy callback jak null, drugi callback jak coś (w tym przypadku `nasz User`).
+Zobacz, że wzór wygląda podobnie - za pomocą `_authFacade` używamy zależności, aby zrobić coś po stronie Firebase, a następnie przypisujemy do zmiennej `state` dany stan typu AuthState. `getSignedUser` zwraca `Option<User>`, więc kożystamy z `fold` paczki `dartz` który łopatologicznie oznacza - pierwszy callback jak null, drugi callback jak coś (w tym przypadku `nasz User`).
 
 ```dart
 import 'package:riverpod/all.dart';
@@ -109,9 +109,9 @@ abstract class AuthFormState with _$AuthFormState {
 
 ```
 
-Chodzi o to, że nie będziemy tutaj zwracać innego stanu po zmianie, ale kopię tego samego stanu z jakąś zmianą typu inny email. Brzmi to dziwnie, ale zaraz zobaczymy jak to działa w StateNotiferze. Czyli tworzymy `AuthFromState`, definiujemy jego parametry i jedną fabrykę jako stan początkowy, który posłuży nam jako ten, który przekażemy w `super` StateNotifiera, aby od początku miał jakiś stan - w naszym wypadku czysty formularz. Uwagę może przykuć `authFailureOrSuccessOption`, który jest albo nullem (Option), albo porażką, albo sukcesem (Unit czyli void czyli nic) - chodzi w tym o to, że na próbę zalogowania dostaniemy albo konkretny błąd czemu się nie udało albo info o tym, że jest gitarka.
+Chodzi o to, że nie będziemy tutaj zwracać innego stanu po zmianie, ale kopię tego samego stanu z jakąś zmianą typu "inny email". Brzmi to dziwnie, ale zaraz zobaczymy jak to działa w StateNotiferze. Czyli tworzymy `AuthFromState`, definiujemy jego parametry i jedną fabrykę jako stan początkowy, który posłuży nam jako ten, który przekażemy w `super` StateNotifiera, aby od początku miał jakiś stan - w naszym wypadku - czysty formularz. Uwagę może przykuć `authFailureOrSuccessOption`, który jest albo nullem (Option), albo porażką, albo sukcesem (Unit czyli void czyli nic) - chodzi w tym o to, że na próbę zalogowania dostaniemy albo konkretny błąd czemu się nie udało albo info o tym, że jest gitarka.
 
-Dalej tworzymy `auth_form_controller.dart` i może on wyglądać na skomplikowany z uwagi na metodę `_performActionOnFacadeWithEmailAndPassword` i jest to coś co zapożyczyłem z kursu Resocodera, ponieważ robił to samo w swoim Blocu. Jakkolwiek zawile to nie wygląda, to polega na tym, że w nasze logowanie i rejestracja są bardzo podobne. W obu tych rzeczach mamy ten sam EmailAddress i ten sam Password, tak samo je walidujemy i jedyna różnica, to że na koniec z naszej fasady nie wywołujemy `login` tylko `register`. Więc w myśl zasady DRY czyli nie powtarzania tego samego kodu, po prostu do tej metody, przekazujemy metodę fasady. A działa to tak, że walidujemy nasz EmaiAddress i Password, odpalamy przekazany callback (login albo register), ustawiamy stan na `isSubmiting` aby wyświetlić loading i na koniec jak wiemy jaki jest wynik próby logowania/rejestracji zwracamy stan z sukcesem albo porażką. Ustawiamy też `showErrorMessage` na `true`, ponieważ od tego uzależnimy wyświetlanie naszych errorów pod `TextFieldem` - chodzi o to, że jak wiesz `ValueObject` będzie się walidował przy wpisywaniu, więc jeżeli Twój email to dupa@123.pl, to kiedy wpiszesz ‘d’, `EmailAddres` się waliduje i zwróci error -> “Yo, zły format maila”. Więc, aby user nie pomyślał sobie “Ej no, wyluzuj mordeczko, już wpisuje”, to wyświetlamy errory dopiero jak `showErrorMessages` jest `true`.
+Dalej tworzymy `auth_form_controller.dart` i może on wyglądać na skomplikowany z uwagi na metodę `_performActionOnFacadeWithEmailAndPassword` i jest to coś co zapożyczyłem z kursu Resocodera, ponieważ robił to samo w swoim Blocu. Jakkolwiek zawile to nie wygląda, to polega na tym, że w nasze logowanie i rejestracja są bardzo podobne. W obu tych rzeczach mamy ten sam EmailAddress i ten sam Password, tak samo je walidujemy i jedyna różnica, to że na koniec z naszej metody nie wywołujemy `login` tylko `register`. Więc w myśl zasady DRY czyli nie powtarzania tego samego kodu, po prostu do tej metody, przekazujemy metodę fasady. A działa to tak, że walidujemy nasz EmaiAddress i Password, odpalamy przekazany callback (login albo register), ustawiamy stan na `isSubmiting` aby wyświetlić loading i na koniec jak wiemy jaki jest wynik próby logowania/rejestracji zwracamy stan z sukcesem albo porażką. Ustawiamy też `showErrorMessage` na `true`, ponieważ od tego uzależnimy wyświetlanie naszych errorów pod `TextFieldem` - chodzi o to, że jak wiesz `ValueObject` będzie się walidował przy wpisywaniu, więc jeżeli Twój email to dupa@123.pl, to kiedy wpiszesz ‘d’, `EmailAddres` się waliduje i zwróci error -> “Yo, zły format maila”. Więc, aby user nie pomyślał sobie “Ej no, wyluzuj mordeczko, już wpisuje”, to wyświetlamy errory dopiero jak `showErrorMessages` jest `true`.
 
 Zwróć uwagę, że zawsze robimy state = `state.copyWith...`. Tak jak wspomniałem `state` StateNotifiera jest immutable i nie możemy go zmienić a jedynie nadpisać nowym, stąd kopiujemy poprzedni stan jako zupełnie nowy obiekt i przypisujemy go do stanu ze zmianami (np. zmiana emialAddress, która będzie odpalać się na każdą literkę wpisaną w TextField)
 
