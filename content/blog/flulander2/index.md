@@ -426,7 +426,7 @@ Jeżeli spodobało wam się to podejście, to zachęcam z całego serca do obejr
 
 #### Testowanie
 
-Mam nadzieje, że nikogo nie muszę namawiać do testowania. Ja myślę zawsze o testach jak o “Sejwie” w grze RPG - kiedy mam na coś napisany test, to wiem, że jeżeli ktoś (lub ja) zacznie grzebać w kodzie, to dopóki test przechodzi, wszystko co zrobiłem do tej pory jest jak miało być. Nawet przykład z tego projektu. Flutter 1.22 informuje nas, że w widgecie `Form` już nie powinniśmy używać `autovalidate`, które miałem ustawione na `state.showErrorMessage`. Więc luźno zmieniłem `autovalidate` na `AutoValidateMode.onUserInteraction` i byłem zadowolony. Puszczam test i… hola hola piękny chłopcze. Testy failują. Patrzę co jest nie tak i faktycznie w takim ustawieniu, pola email i password, walidować się będą od razu a nie po próbie zalogowania/zarejestrowania. Więc szybka poprawka na to co jest teraz i działa jak powinno. Aż strach pomyśleć ile takich głupot może nam przejść obok nosa bez testów.
+Mam nadzieje, że nikogo nie muszę namawiać do testowania. Ja myślę zawsze o testach jak o “Sejwie” w grze RPG - kiedy mam na coś napisany test, to wiem, że jeżeli ktoś (lub ja) zacznie grzebać w kodzie, to dopóki test przechodzi, wszystko co zrobiłem do tej pory jest jak miało być. Nawet przykład z tego projektu. Flutter 1.22 informuje nas, że w widgecie `Form` już nie powinniśmy używać `autovalidate`, które miałem ustawione na `state.showErrorMessage`. Więc luźno zmieniłem `autovalidate` na `AutoValidateMode.onUserInteraction` i byłem zadowolony. Puszczam test i… hola hola piękny chłopcze. Testy failują. Patrzę co jest nie tak i faktycznie w takim ustawieniu, pola email i password walidować się będą od razu, a nie po próbie zalogowania/zarejestrowania. Więc szybka poprawka na to co jest teraz i działa jak powinno. Aż strach pomyśleć ile takich głupot może nam przejść obok nosa bez testów.
 
 Ale dobra, to oto jak wygląda wyżej opisany test case. Czyli po odpaleniu appki i niezalogowanym userze, mamy dostać authform. Ma nie być żadnych errorów. User wpisuje zły format emaila i za któtkie hasło i klika button. User ma dostać errory, że zły format i za krótkie hasło.
 
@@ -476,8 +476,6 @@ testWidgets(
   );
 }
 ```
-
-Ale dobra, to oto jak wygląda wyżej opisany test case. Czyli po odpaleniu appki i niezalogowanym userze, mamy dostać authform. Ma nie być żadnych errorów. User wpisuje zły format emaila i za krótkie hasło i klika button. User ma dostać errory, że zły format i za krótkie hasło. tera
 
 I teraz czemu to jest takie super? Pamiętacie, że w domain mamy `IAuthFacade` a w infrastructure jego implementacje `FirebaseAuthFacase`? To znów mamy szansę zobaczyć piękno naszej architektury, ponieważ za pomocą paczki `mockito` (chyba wszyscy znają i kochają), tworzymy mockową klasę `MockFirebaseAuthFacade`, która implementuje nasz `IAuthFacade` czyli naszego Pana Kierownika co wie co ma być zrobione ale nie wie jak.
 
