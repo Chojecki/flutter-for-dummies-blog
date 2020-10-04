@@ -10,7 +10,7 @@ W części pierwszej naszego Firebase Authentication, zbudowaliśmy sobie warstw
 
 #### APPLICATION:
 
-Warstwa aplikacji do w moim odczuci logika, a jeszcze prościej, nasze zarządzanie stanem. Przyjęło się mówić nowoczesnych deklaratywnych frameworkach jak React, SwiftUI czy właśnie Flutter stan naszej aplikacji definiuje jego widoki.
+Warstwa aplikacji to w moim odczuciu logika, a jeszcze prościej, nasze zarządzanie stanem. Przyjęło się mówić nowoczesnych deklaratywnych frameworkach jak React, SwiftUI czy właśnie Flutter stan naszej aplikacji definiuje jego widoki.
 
 > Narzędzi do zarządzania stanem jest bardzo dużo. Moim jednak zdaniem, najbardziej optymalne będą te, w których stan jest > immutable. Przykładem jest np Cubit/flutter_bloc, Redux czy StateNotifier. StateNotifier jest osobną paczką, ale wchodzi > w skład Riverpod, dlatego będziemy go używać.
 
